@@ -8,7 +8,7 @@
     <!-- 1. DISEÑO: Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 2. CEREBRO: React y ReactDOM (Cloudflare) -->
+    <!-- 2. CEREBRO: React y ReactDOM (Cloudflare - Estable) -->
     <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
     
@@ -29,7 +29,8 @@
     <div id="root">
         <div class="min-h-screen flex flex-col items-center justify-center p-4 text-center">
             <div class="loader mb-4"></div>
-            <h2 class="text-2xl font-bold text-pink-500 mb-2">Cargando tu Tienda...</h2>
+            <h2 class="text-2xl font-bold text-pink-500 mb-2">Cargando Crystal Lotus...</h2>
+            <p class="text-gray-400 text-sm">Preparando tus productos ✨</p>
         </div>
     </div>
 
@@ -56,10 +57,23 @@
 
         const { useState, useEffect } = React;
 
-        // --- PRODUCTOS INICIALES (VACÍO) ---
-        const InitialProducts = [];
+        // --- PRODUCTOS RESTAURADOS ---
+        const InitialProducts = [
+            { id: 1, name: "Cuaderno Tapa Blanda Personalizable", price: 7000, description: "Cuaderno de tapa blanda, liviano y flexible, diseñado para adaptarse a tu estilo. Ideal para estudiar u organizarte.", image: "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&q=80&w=800", category: "Cuadernos", variants: ["48 Hojas", "60 Hojas", "80 Hojas", "Rayada", "Cuadriculada", "Lisa"], inStock: true },
+            { id: 2, name: "Cuaderno Tapa Rígida Personalizable", price: 9000, description: "Cuaderno resistente y duradero de tapa rígida. Superficie firme para proteger tus apuntes.", image: "https://images.unsplash.com/photo-1531346878377-a51e195e8e56?auto=format&fit=crop&q=80&w=800", category: "Cuadernos", variants: ["48 Hojas", "60 Hojas", "80 Hojas", "Rayada", "Cuadriculada", "Lisa"], inStock: true },
+            { id: 3, name: "Anotador Tapa Rígida Personalizable", price: 4000, description: "Anotador de tapa rígida, resistente y duradero. Ideal para llevar a todos lados.", image: "https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&q=80&w=800", category: "Cuadernos", variants: ["30 Hojas", "50 Hojas", "Rayada", "Cuadriculada", "Lisa"], inStock: true },
+            { id: 4, name: "Anotador Tapa Blanda Personalizable", price: 2500, description: "Anotador liviano y flexible, perfecto para notas rápidas.", image: "https://images.unsplash.com/photo-1595188882375-72c0506e78ba?auto=format&fit=crop&q=80&w=800", category: "Cuadernos", variants: ["30 Hojas", "50 Hojas", "Rayada", "Cuadriculada", "Lisa"], inStock: true },
+            { id: 5, name: "Agenda Tapa Rígida 365 Días", price: 15000, description: "Agenda anual para planificar tu día a día, metas y recordatorios.", image: "https://images.unsplash.com/photo-1506784365847-bbad939e9335?auto=format&fit=crop&q=80&w=800", category: "Agendas", variants: ["Portada a elección"], inStock: true },
+            { id: 6, name: "Agenda para Pediatras", price: 20000, description: "Agenda profesional diseñada para pediatras. Organiza turnos.", image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=800", category: "Agendas", variants: ["Pediatría"], inStock: true },
+            { id: 7, name: "Agenda para Manicuristas", price: 20000, description: "Agenda ideal para manicuristas. Organiza turnos y clientas.", image: "https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&q=80&w=800", category: "Agendas", variants: ["Manicuría"], inStock: true },
+            { id: 8, name: "Photocards K-Pop Doble Faz", price: 800, description: "Photocards estilo coleccionable doble faz, excelente calidad.", image: "https://images.unsplash.com/photo-1612152843869-7d8719c8d002?auto=format&fit=crop&q=80&w=800", category: "Merch Fanmade", variants: ["Individual ($800)", "Pack x5 ($3.500)", "Pack x10 ($6.800)", "Pack x15 ($9.600)", "Pack x20 ($12.000)"], inStock: true },
+            { id: 9, name: "Libro para Colorear (20 Ilust.)", price: 0, description: "Libro de tapa blanda con 20 dibujos listos para colorear.", image: "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&q=80&w=800", category: "Papelería Creativa", variants: ["Infantil", "Adulto"], inStock: true },
+            { id: 10, name: "Pack Stickers Comunes", price: 2000, description: "Stickers de excelente calidad para decorar cuadernos.", image: "https://images.unsplash.com/photo-1572375992501-4b0892d50c69?auto=format&fit=crop&q=80&w=800", category: "Papelería Creativa", variants: ["x10 ($2.000)", "x20 ($3.600)", "x30 ($5.100)", "x40 ($6.400)"], inStock: true },
+            { id: 11, name: "Pack Stickers Resistentes al Agua", price: 2500, description: "Stickers durables ideales para botellas.", image: "https://images.unsplash.com/photo-1611566026373-c6c85447dbdc?auto=format&fit=crop&q=80&w=800", category: "Papelería Creativa", variants: ["x5 ($2.500)", "x10 ($5.000)", "x20 ($9.000)", "x30 ($12.750)", "x40 ($16.000)"], inStock: true },
+            { id: 12, name: "Impresión de Fotos Alta Calidad", price: 1000, description: "Servicio de impresión fotográfica, colores nítidos.", image: "https://images.unsplash.com/photo-1552168324-d612d77725e3?auto=format&fit=crop&q=80&w=800", category: "Impresiones Fotográficas", variants: ["10x14 cm ($1.000)", "14x20 cm ($2.000)", "20x28 cm ($4.000)"], inStock: true },
+            { id: 13, name: "Botella Plástica 750ml", price: 3500, description: "Botella reutilizable liviana y práctica.", image: "https://images.unsplash.com/photo-1602143407151-011141950038?auto=format&fit=crop&q=80&w=800", category: "Accesorios", variants: ["Varios Colores"], inStock: true }
+        ];
 
-        // --- CONFIGURACIÓN INICIAL (EDITABLE) ---
         const InitialConfig = { 
             storeName: "Crystal Lotus", 
             storeSubtitle: "Regalería", 
@@ -147,17 +161,17 @@
 
             const categories = ["Todos", ...new Set(products.map(p => p.category))];
 
-            // LocalStorage Key Nueva para empezar limpio
+            // LocalStorage Key Nueva para recuperar productos (v6)
             useEffect(() => {
-                const savedProducts = localStorage.getItem('crystalLotus_clean_v1_products');
-                const savedConfig = localStorage.getItem('crystalLotus_clean_v1_config');
+                const savedProducts = localStorage.getItem('crystalLotus_products_v6');
+                const savedConfig = localStorage.getItem('crystalLotus_config_v6');
                 if (savedProducts) setProducts(JSON.parse(savedProducts));
                 if (savedConfig) setConfig(JSON.parse(savedConfig));
             }, []);
 
             useEffect(() => {
-                localStorage.setItem('crystalLotus_clean_v1_products', JSON.stringify(products));
-                localStorage.setItem('crystalLotus_clean_v1_config', JSON.stringify(config));
+                localStorage.setItem('crystalLotus_products_v6', JSON.stringify(products));
+                localStorage.setItem('crystalLotus_config_v6', JSON.stringify(config));
             }, [products, config]);
 
             const handleAdminToggle = () => {

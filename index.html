@@ -8,11 +8,11 @@
     <!-- 1. DISEÑO: Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 2. CEREBRO: React y ReactDOM (Desde Cloudflare - Mucho más estable) -->
+    <!-- 2. CEREBRO: React y ReactDOM (Cloudflare) -->
     <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
     <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
     
-    <!-- 3. TRADUCTOR: Babel (Para entender el código) -->
+    <!-- 3. TRADUCTOR: Babel -->
     <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
     
     <style>
@@ -26,22 +26,15 @@
 </head>
 <body class="bg-yellow-50 text-gray-700 selection:bg-pink-200">
     
-    <!-- CONTENEDOR PRINCIPAL -->
     <div id="root">
-        <!-- PANTALLA DE CARGA INICIAL -->
         <div class="min-h-screen flex flex-col items-center justify-center p-4 text-center">
             <div class="loader mb-4"></div>
-            <h2 class="text-2xl font-bold text-pink-500 mb-2">Abriendo Crystal Lotus...</h2>
-            <p class="text-gray-400 text-sm">Cargando la magia ✨</p>
-            <button onclick="window.location.reload()" class="mt-8 text-xs text-gray-400 underline hover:text-pink-500">
-                ¿Tarda mucho? Toca aquí para recargar
-            </button>
+            <h2 class="text-2xl font-bold text-pink-500 mb-2">Cargando tu Tienda...</h2>
         </div>
     </div>
 
-    <!-- CÓDIGO DE LA APLICACIÓN -->
     <script type="text/babel">
-        // --- ICONOS SVG ---
+        // --- ICONOS ---
         const Icons = {
             ShoppingBag: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width={p.size||24} height={p.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>,
             Plus: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width={p.size||24} height={p.size||24} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>,
@@ -63,12 +56,159 @@
 
         const { useState, useEffect } = React;
 
-        // --- PRODUCTOS ---
-        const InitialProducts = [
-            { id: 1, name: "Cuaderno Tapa Blanda Personalizable", price: 7000, description: "Cuaderno de tapa blanda, liviano y flexible, diseñado para adaptarse a tu estilo.", image: "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&q=80&w=800", category: "Cuadernos", variants: ["48 Hojas", "60 Hojas", "80 Hojas", "Rayada", "Cuadriculada", "Lisa"], inStock: true },
-            { id: 2, name: "Cuaderno Tapa Rígida Personalizable", price: 9000, description: "Cuaderno resistente y duradero de tapa rígida. Superficie firme.", image: "https://images.unsplash.com/photo-1531346878377-a51e195e8e56?auto=format&fit=crop&q=80&w=800", category: "Cuadernos", variants: ["48 Hojas", "60 Hojas", "80 Hojas", "Rayada", "Cuadriculada", "Lisa"], inStock: true },
-            { id: 3, name: "Anotador Tapa Rígida Personalizable", price: 4000, description: "Anotador de tapa rígida, resistente y duradero. Ideal para llevar a todos lados.", image: "https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&q=80&w=800", category: "Cuadernos", variants: ["30 Hojas", "50 Hojas", "Rayada", "Cuadriculada", "Lisa"], inStock: true },
-            { id: 4, name: "Anotador Tapa Blanda Personalizable", price: 2500, description: "Anotador liviano y flexible, perfecto para notas rápidas.", image: "https://images.unsplash.com/photo-1595188882375-72c0506e78ba?auto=format&fit=crop&q=80&w=800", category: "Cuadernos", variants: ["30 Hojas", "50 Hojas", "Rayada", "Cuadriculada", "Lisa"], inStock: true },
+        // --- PRODUCTOS INICIALES (VACÍO) ---
+        const InitialProducts = [];
+
+        // --- CONFIGURACIÓN INICIAL (EDITABLE) ---
+        const InitialConfig = { 
+            storeName: "Crystal Lotus", 
+            storeSubtitle: "Regalería", 
+            logoUrl: "", 
+            currency: "ARS",
+            whatsappNumber: "5491125573160", 
+            instagramUser: "@crystal_lotus.nb" 
+        };
+
+        const formatPrice = (price) => new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', minimumFractionDigits: 0 }).format(price);
+
+        const ProductCard = ({ product, isAdmin, onEdit, onDelete, config }) => {
+            const whatsappLink = `https://wa.me/${config.whatsappNumber}?text=Hola ${config.storeName}! 💖 Me interesa: ${product.name} - ${formatPrice(product.price)}`;
+
+            return (
+                <div className="group relative bg-white rounded-3xl shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 overflow-hidden border-2 border-pink-100 flex flex-col h-full">
+                    {product.inStock ? (
+                        <div className="absolute top-3 left-3 z-10 bg-white/90 backdrop-blur text-pink-500 text-xs font-bold px-3 py-1 rounded-full shadow-sm flex items-center gap-1">
+                            <Icons.Sparkles size={12} /> Disponible
+                        </div>
+                    ) : (
+                        <div className="absolute top-3 left-3 z-10 bg-gray-800 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">Agotado</div>
+                    )}
+                    <div className="relative h-64 overflow-hidden bg-pink-50">
+                        <img src={product.image} alt={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" onError={(e) => {e.target.src = 'https://images.unsplash.com/photo-1628149455676-1463e2646394?auto=format&fit=crop&q=80&w=800'}} />
+                    </div>
+                    <div className="p-5 flex flex-col flex-grow relative">
+                        <div className="mb-1"><span className="text-xs uppercase tracking-wider text-teal-500 font-extrabold bg-teal-50 px-2 py-1 rounded-md">{product.category}</span></div>
+                        <h3 className="text-xl font-bold text-gray-700 leading-tight mb-2 font-fredoka">{product.name}</h3>
+                        <p className="text-gray-500 text-sm line-clamp-2 mb-4 flex-grow font-medium">{product.description}</p>
+                        
+                        {product.variants && product.variants.length > 0 && product.variants[0] !== "" && (
+                            <div className="flex flex-wrap gap-2 mb-4">
+                                {product.variants.map((variant, idx) => (
+                                    <span key={idx} className="text-xs text-purple-600 px-2 py-1 rounded-full bg-purple-50 border border-purple-100">{variant}</span>
+                                ))}
+                            </div>
+                        )}
+                        <div className="flex items-center justify-between mt-auto pt-4 border-t border-dashed border-pink-200">
+                            <span className="text-2xl font-black text-pink-500 font-fredoka">{product.price > 0 ? formatPrice(product.price) : <span className="text-sm">Consultar</span>}</span>
+                            {isAdmin ? (
+                                <div className="flex gap-2">
+                                    <button onClick={() => onEdit(product)} className="p-2 bg-yellow-100 text-yellow-600 rounded-2xl hover:bg-yellow-200 transition-colors"><Icons.Edit2 size={18} /></button>
+                                    <button onClick={() => onDelete(product.id)} className="p-2 bg-red-100 text-red-500 rounded-2xl hover:bg-red-200 transition-colors"><Icons.Trash2 size={18} /></button>
+                                </div>
+                            ) : (
+                                <a href={product.inStock ? whatsappLink : '#'} target="_blank" rel="noopener noreferrer" className={`flex items-center gap-2 px-4 py-2 rounded-2xl font-bold transition-all transform hover:scale-105 active:scale-95 ${product.inStock ? 'bg-gradient-to-r from-pink-400 to-purple-400 text-white shadow-lg shadow-pink-200' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}>
+                                    <span className="text-sm">¡Lo quiero!</span><Icons.Heart className="fill-current" size={16} />
+                                </a>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const Modal = ({ isOpen, onClose, title, children }) => {
+            if (!isOpen) return null;
+            return (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-purple-900/30 backdrop-blur-sm animate-fade-in">
+                    <div className="bg-white rounded-[2rem] w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl animate-bounce-up border-4 border-white">
+                        <div className="flex justify-between items-center p-5 border-b border-dashed border-gray-200 bg-pink-50 rounded-t-[1.7rem]">
+                            <h2 className="text-2xl font-bold text-gray-700 font-fredoka flex items-center gap-2"><Icons.Sparkles size={24} className="text-yellow-400" /> {title}</h2>
+                            <button onClick={onClose} className="p-2 hover:bg-white rounded-full transition-colors text-gray-400 hover:text-pink-500"><Icons.X size={24} /></button>
+                        </div>
+                        <div className="p-6">{children}</div>
+                    </div>
+                </div>
+            );
+        };
+
+        function App() {
+            const [products, setProducts] = useState(InitialProducts);
+            const [config, setConfig] = useState(InitialConfig);
+            const [isAdmin, setIsAdmin] = useState(false);
+            const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+            const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+            const [currentProduct, setCurrentProduct] = useState(null);
+            const [searchTerm, setSearchTerm] = useState("");
+            const [selectedCategory, setSelectedCategory] = useState("Todos");
+            const [productForm, setProductForm] = useState({ name: '', price: '', description: '', image: '', category: '', variants: '', inStock: true });
+            
+            // Estado para el formulario de configuración, inicializado con los valores actuales
+            const [configForm, setConfigForm] = useState(config);
+
+            const categories = ["Todos", ...new Set(products.map(p => p.category))];
+
+            // LocalStorage Key Nueva para empezar limpio
+            useEffect(() => {
+                const savedProducts = localStorage.getItem('crystalLotus_clean_v1_products');
+                const savedConfig = localStorage.getItem('crystalLotus_clean_v1_config');
+                if (savedProducts) setProducts(JSON.parse(savedProducts));
+                if (savedConfig) setConfig(JSON.parse(savedConfig));
+            }, []);
+
+            useEffect(() => {
+                localStorage.setItem('crystalLotus_clean_v1_products', JSON.stringify(products));
+                localStorage.setItem('crystalLotus_clean_v1_config', JSON.stringify(config));
+            }, [products, config]);
+
+            const handleAdminToggle = () => {
+                if (isAdmin) { setIsAdmin(false); } else {
+                    const password = prompt("🔒 Ingresa la contraseña de dueña:");
+                    // CAMBIO DE PIN A 5656
+                    if (password === "5656") { setIsAdmin(true); alert("¡Hola Dueña! 💖"); } else if (password !== null) { alert("Contraseña incorrecta 🚫"); }
+                }
+            };
+
+            const handleEdit = (product) => { setCurrentProduct(product); setProductForm({ ...product, variants: product.variants.join(', ') }); setIsProductModalOpen(true); };
+            const handleDelete = (id) => { if (window.confirm('¿Borrar este producto tiernis? 🥺')) { setProducts(products.filter(p => p.id !== id)); } };
+            const handleAddNew = () => { setCurrentProduct(null); setProductForm({ name: '', price: '', description: '', image: '', category: '', variants: '', inStock: true }); setIsProductModalOpen(true); };
+            
+            const handleProductSubmit = (e) => {
+                e.preventDefault();
+                const variantsArray = String(productForm.variants).split(',').map(v => v.trim());
+                const productData = { ...productForm, price: parseFloat(productForm.price), variants: variantsArray, id: currentProduct ? currentProduct.id : Date.now() };
+                if (currentProduct) { setProducts(products.map(p => p.id === currentProduct.id ? productData : p)); } else { setProducts([productData, ...products]); }
+                setIsProductModalOpen(false);
+            };
+
+            const handleConfigSubmit = (e) => { e.preventDefault(); setConfig({ ...config, ...configForm }); setIsConfigModalOpen(false); };
+            const handleImageUpload = (e, field, setFormState, formState) => { const file = e.target.files[0]; if (file) { const imageUrl = URL.createObjectURL(file); setFormState({ ...formState, [field]: imageUrl }); } };
+
+            const filteredProducts = products.filter(product => {
+                const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+                const matchesCategory = selectedCategory === "Todos" || product.category === selectedCategory;
+                return matchesSearch && matchesCategory;
+            });
+
+            return (
+                <div className="min-h-screen pb-20 md:pb-0">
+                    <nav className="bg-white/90 backdrop-blur-md sticky top-0 z-40 shadow-sm border-b-4 border-pink-100">
+                        <div className="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+                            <div className="flex items-center gap-3">
+                                {config.logoUrl ? <img src={config.logoUrl} alt="Logo" className="h-12 w-auto object-contain rounded-xl hover:rotate-3 transition-transform" /> : <div className="bg-gradient-to-tr from-pink-400 to-purple-400 p-2.5 rounded-2xl text-white shadow-lg shadow-pink-200 rotate-3"><Icons.Gift size={24} /></div>}
+                                <div><h1 className="text-2xl font-black text-gray-800 tracking-tight font-fredoka leading-none">{config.storeName}</h1><p className="text-xs font-bold text-pink-400 tracking-widest uppercase">{config.storeSubtitle}</p></div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                {isAdmin && <button onClick={() => {setConfigForm(config); setIsConfigModalOpen(true)}} className="p-2 bg-gray-100 rounded-full text-gray-400 hover:text-purple-500 transition-colors"><Icons.Settings size={20} /></button>}
+                                <button onClick={handleAdminToggle} className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all shadow-sm ${isAdmin ? 'bg-purple-500 text-white' : 'bg-white text-gray-400 border border-gray-200'}`}>
+                                    {isAdmin ? <Icons.Unlock size={14} /> : <Icons.Lock size={14} />}<span className="hidden sm:inline">{isAdmin ? 'Soy la Dueña' : 'Admin'}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </nav>
+
+                    <main className="max-w-6xl mx-auto px-4 py-8 min-h-[60vh]">
+                        <div className="text-center py-8 mb-6 bg-white rounded-[3rem] shadow-sm border-2 border-pink-50 relative overflow-hidden">
+                            <div c80&w=800", category: "Cuadernos", variants: ["30 Hojas", "50 Hojas", "Rayada", "Cuadriculada", "Lisa"], inStock: true },
             { id: 5, name: "Agenda Tapa Rígida 365 Días", price: 15000, description: "Agenda anual para planificar tu día a día, metas y recordatorios.", image: "https://images.unsplash.com/photo-1506784365847-bbad939e9335?auto=format&fit=crop&q=80&w=800", category: "Agendas", variants: ["Portada a elección"], inStock: true },
             { id: 6, name: "Agenda para Pediatras", price: 20000, description: "Agenda profesional diseñada para pediatras. Organiza turnos.", image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=800", category: "Agendas", variants: ["Pediatría"], inStock: true },
             { id: 7, name: "Agenda para Manicuristas", price: 20000, description: "Agenda ideal para manicuristas. Organiza turnos y clientas.", image: "https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&q=80&w=800", category: "Agendas", variants: ["Manicuría"], inStock: true },

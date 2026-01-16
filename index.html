@@ -171,7 +171,6 @@
             const handleEdit = (product) => { setCurrentProduct(product); setProductForm({ ...product, variants: product.variants.join(', ') }); setIsProductModalOpen(true); };
             const handleDelete = (id) => { if (window.confirm('¿Borrar este producto tiernis? 🥺')) { setProducts(products.filter(p => p.id !== id)); } };
             const handleAddNew = () => { setCurrentProduct(null); setProductForm({ name: '', price: '', description: '', image: '', category: '', variants: '', inStock: true }); setIsProductModalOpen(true); };
-            const handleAddNew = () => { setCurrentProduct(null); setProductForm({ name: '', price: '', description: '', image: '', category: '', variants: '', inStock: true }); setIsProductModalOpen(true); };
             
             const handleProductSubmit = (e) => {
                 e.preventDefault();
@@ -309,3 +308,5 @@
     </script>
 </body>
 </html>
+
+

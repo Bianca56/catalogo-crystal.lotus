@@ -5,52 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crystal Lotus - Catálogo</title>
     
-    <!-- 1. ESTILOS (Tailwind) -->
+    <!-- 1. DISEÑO: Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- 2. LIBRERÍAS (React y Babel) -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- 2. CEREBRO: React y ReactDOM (Desde Cloudflare - Mucho más estable) -->
+    <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    
+    <!-- 3. TRADUCTOR: Babel (Para entender el código) -->
+    <script crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;600;700&display=swap');
         body { font-family: 'Fredoka', sans-serif; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Animación de carga */
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #ec4899; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
+        .loader { border: 4px solid #fce7f3; border-top: 4px solid #ec4899; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="bg-yellow-50 text-gray-700 selection:bg-pink-200">
     
-    <!-- 3. CONTENEDOR PRINCIPAL -->
+    <!-- CONTENEDOR PRINCIPAL -->
     <div id="root">
-        <!-- Esto se ve mientras carga. Si se queda aquí, React no arrancó. -->
-        <div style="text-align: center; padding-top: 50px;">
-            <div class="loader"></div>
-            <h2 class="text-xl font-bold text-pink-500">Cargando Crystal Lotus...</h2>
-            <p class="text-sm text-gray-400">Si esto tarda mucho, recarga la página.</p>
+        <!-- PANTALLA DE CARGA INICIAL -->
+        <div class="min-h-screen flex flex-col items-center justify-center p-4 text-center">
+            <div class="loader mb-4"></div>
+            <h2 class="text-2xl font-bold text-pink-500 mb-2">Abriendo Crystal Lotus...</h2>
+            <p class="text-gray-400 text-sm">Cargando la magia ✨</p>
+            <button onclick="window.location.reload()" class="mt-8 text-xs text-gray-400 underline hover:text-pink-500">
+                ¿Tarda mucho? Toca aquí para recargar
+            </button>
         </div>
     </div>
 
-    <!-- 4. DETECTOR DE ERRORES (Por si algo falla) -->
-    <script>
-        window.onerror = function(message, source, lineno, colno, error) {
-            const root = document.getElementById('root');
-            root.innerHTML = `
-                <div style="padding: 20px; text-align: center; color: red;">
-                    <h3>Ups! Algo salió mal 😿</h3>
-                    <p>Error: ${message}</p>
-                    <p>Línea: ${lineno}</p>
-                </div>
-            `;
-        };
-    </script>
-
-    <!-- 5. LÓGICA DE LA APP -->
+    <!-- CÓDIGO DE LA APLICACIÓN -->
     <script type="text/babel">
         // --- ICONOS SVG ---
         const Icons = {
@@ -168,4 +157,7 @@
             const [selectedCategory, setSelectedCategory] = useState("Todos");
             const [productForm, setProductForm] = useState({ name: '', price: '', description: '', image: '', category: '', variants: '', inStock: true });
             const [configForm, setConfigForm] = useState({ storeName: '', storeSubtitle: '', logoUrl: '' });
-            const categories = ["Todos", ..
+            const categories = ["Todos", ...new Set(products.map(p => p.category))];
+
+            useEffect(() => {
+                const savedProducts = localStorage.getItem('crystalLotus_
